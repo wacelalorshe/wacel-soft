@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- عنوان الصفحة -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام محاسبة للمتاجر الصغيرة</title>
+    
+    <!-- روابط CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- مكتبة jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- رأس الصفحة -->
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-calculator"></i> نظام محاسبة المتاجر الصغيرة</h1>
+            <p>نظام مبسط وسهل لإدارة محاسبة متجرك</p>
+        </div>
+    </header>
+    
+    <!-- القسم الرئيسي -->
+    <div class="container">
+        <!-- قائمة التنقل الرئيسية -->
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>لوحة التحكم
+            </button>
+            <button class="nav-btn" data-section="sales">
+                <i class="fas fa-shopping-cart"></i>المبيعات
+            </button>
+            <button class="nav-btn" data-section="purchases">
+                <i class="fas fa-boxes"></i>المشتريات
+            </button>
+            <button class="nav-btn" data-section="expenses">
+                <i class="fas fa-money-bill-wave"></i>المصروفات
+            </button>
+            <button class="nav-btn" data-section="inventory">
+                <i class="fas fa-warehouse"></i>المخزون
+            </button>
+            <button class="nav-btn" data-section="reports">
+                <i class="fas fa-chart-bar"></i>التقارير
+            </button>
+            <button class="nav-btn" data-section="backup">
+                <i class="fas fa-database"></i>النسخ الاحتياطي
+            </button>
+        </nav>
+        
+        <!-- قسم لوحة التحكم -->
+        <section id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h2><i class="fas fa-tachometer-alt"></i> نظرة عامة</h2>
+                <button class="btn" id="refreshDashboard">
+                    <i class="fas fa-sync-alt"></i>تحديث البيانات
+                </button>
+            </div>
+            
+            <!-- بطاقات الإحصائيات -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3>إجمالي المبيعات</h3>
+                    <div class="card-value" id="totalSales">0 ر.س</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h3>إجمالي المشتريات</h3>
+                    <div class="card-value" id="totalPurchases">0 ر.س</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3>إجمالي المصروفات</h3>
+                    <div class="card-value" id="totalExpenses">0 ر.س</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>صافي الربح</h3>
+                    <div class="card-value" id="netProfit">0 ر.س</div>
+                </div>
+            </div>
+            
+            <div class="recent-activity">
+                <h3>آخر المعاملات</h3>
+                <div id="recentActivity">لا توجد معاملات حديثة</div>
+            </div>
+        </section>
+        
+        <!-- قسم المبيعات -->
+        <section id="sales" class="content-section">
+            <div class="section-header">
+                <div class="section-actions">
+                    <button class="btn btn-success" id="addSaleBtn">
+                        <i class="fas fa-plus"></i> إضافة مبيعات
+                    </button>
+                    <button class="btn btn-primary" onclick="window.PDFSystem.printSalesReport('monthly')">
+                        <i class="fas fa-file-pdf"></i> تصدير تقرير PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="printInvoice()">
+                        <i class="fas fa-print"></i> طباعة فاتورة
+                    </button>
+                </div>
+                <h2><i class="fas fa-shopping-cart"></i> إدارة المبيعات</h2>
+            </div>
+            
+            <!-- قسم البيع السريع بالباركود -->
+<div class="quick-sale-section" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #3498db;">
+    <h3 style="margin-top: 0; color: #2c3e50;"><i class="fas fa-bolt"></i> البيع السريع بالباركود</h3>
+    
+    <div class="quick-sale-container">
+        <div class="quick-sale-form">
+            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="quickBarcode" style="display: block; margin-bottom: 5px; font-weight: bold;">مسح الباركود</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="quickBarcode" placeholder="أدخل أو مسح باركود المنتج" 
+                               style="flex: 1; padding: 10px; border: 2px solid #3498db; border-radius: 5px; font-family: monospace; font-size: 16px;"
+                               maxlength="12">
+                        <button class="btn btn-info" id="scanQuickBarcode" style="white-space: nowrap;">
+                            <i class="fas fa-camera"></i> مسح
+                        </button>
+                        <button class="btn btn-success" id="quickAddProduct" style="white-space: nowrap;">
+                            <i class="fas fa-plus"></i> إضافة
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- عرض المنتج الممسوح -->
+            <div id="quickSaleProductInfo" style="display: none; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #2c3e50;" id="quickProductName"></h4>
+                    <span style="font-weight: bold; color: #27ae60; font-size: 18px;" id="quickProductPrice"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #666; margin-bottom: 15px;">
+                    <span id="quickProductCategory"></span>
+                    <span>المتاح: <span id="quickProductQuantity" style="font-weight: bold;"></span></span>
+                </div>
+                
+                <div class="form-row" style="display: flex; gap: 15px; align-items: center;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="quickSaleQty" style="display: block; margin-bottom: 5px;">الكمية</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button class="btn btn-sm btn-secondary" id="decreaseQty" style="width: 40px; height: 40px; font-size: 20px; padding: 0;">-</button>
+                            <input type="number" id="quickSaleQty" value="1" min="1" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                            <button class="btn btn-sm btn-secondary" id="increaseQty" style="width: 40px; height: 40px; font-size: 20px; padding: 0;">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label for="quickCustomer" style="display: block; margin-bottom: 5px;">اسم العميل (اختياري)</label>
+                        <input type="text" id="quickCustomer" placeholder="اسم العميل" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>الإجمالي: </strong>
+                        <span id="quickTotalPrice" style="font-size: 20px; color: #27ae60; font-weight: bold;">0 ر.س</span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" id="quickReset">
+                            <i class="fas fa-redo"></i> إعادة تعيين
+                        </button>
+                        <button class="btn btn-success" id="quickCompleteSale">
+                            <i class="fas fa-check-circle"></i> إتمام البيع
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- سلة المشتريات السريعة -->
+            <div id="quickCart" style="margin-top: 20px; display: none;">
+                <h4 style="border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 15px;">
+                    <i class="fas fa-shopping-cart"></i> سلة المشتريات
+                </h4>
+                <div id="quickCartItems" style="max-height: 300px; overflow-y: auto;">
+                    <!-- العناصر تضاف هنا بالجافاسكريبت -->
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong>عدد المنتجات:</strong>
+                        <span id="quickCartCount">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px;">
+                        <strong>إجمالي المبلغ:</strong>
+                        <span id="quickCartTotal" style="color: #27ae60; font-weight: bold;">0 ر.س</span>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; justify-content: space-between; gap: 10px;">
+                        <button class="btn btn-danger" id="quickClearCart" style="flex: 1;">
+                            <i class="fas fa-trash"></i> إفراغ السلة
+                        </button>
+                        <button class="btn btn-success" id="quickCheckout" style="flex: 2;">
+                            <i class="fas fa-cash-register"></i> إتمام جميع المشتريات
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- رسالة عند عدم وجود المنتج -->
+            <div id="quickProductNotFound" style="display: none; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; margin-top: 15px;">
+                <h5 style="color: #856404; margin-top: 0;"><i class="fas fa-exclamation-triangle"></i> المنتج غير موجود</h5>
+                <p style="margin-bottom: 10px;">هل تريد إنشاء منتج جديد لهذا الباركود؟</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" id="quickCreateProduct">
+                        <i class="fas fa-plus"></i> إنشاء منتج جديد
+                    </button>
+                    <button class="btn btn-secondary" id="quickCancelCreate">
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            
+            
+            <!-- حقل البحث في المبيعات -->
+            <div class="search-container">
+                <input type="text" id="بحث_المبيعات" class="search-input" 
+                       placeholder="بحث عن منتج بالاسم أو الباركود...">
+            </div>
+            
+            <!-- جدول المبيعات -->
+            <div class="sales-list">
+                <h3>سجل المبيعات</h3>
+                <table id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الإجمالي</th>
+                            <th>العميل</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <!-- بيانات المبيعات تُضاف هنا بالجافاسكريبت -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- قسم المشتريات -->
+        <section id="purchases" class="content-section">
+            <div class="section-header">
+                <div class="section-actions">
+                    <button class="btn btn-success" id="addPurchaseBtn">
+                        <i class="fas fa-plus"></i> إضافة مشتريات
+                    </button>
+                    <button class="btn btn-primary" onclick="طباعة_تقرير_المشتريات()">
+                        <i class="fas fa-file-pdf"></i> تصدير تقرير المشتريات PDF
+                    </button>
+                </div>
+                <h2><i class="fas fa-boxes"></i> إدارة المشتريات</h2>
+            </div>
+            
+            <!-- حقل البحث في المشتريات -->
+            <div class="search-container">
+                <input type="text" id="بحث_المشتريات" class="search-input" 
+                       placeholder="بحث عن منتج بالاسم أو الباركود...">
+            </div>
+            
+            <!-- جدول المشتريات -->
+            <div class="purchases-list">
+                <h3>سجل المشتريات</h3>
+                <table id="purchasesTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الإجمالي</th>
+                            <th>المورد</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchasesTableBody">
+                        <!-- بيانات المشتريات تُضاف هنا بالجافاسكريبت -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- قسم المصروفات -->
+        <section id="expenses" class="content-section">
+            <div class="section-header">
+                <div class="section-actions">
+                    <button class="btn btn-success" id="addExpenseBtn">
+                        <i class="fas fa-plus"></i> إضافة مصروف
+                    </button>
+                    <button class="btn btn-primary" onclick="طباعة_تقرير_المصروفات()">
+                        <i class="fas fa-file-pdf"></i> تصدير تقرير المصروفات PDF
+                    </button>
+                </div>
+                <h2><i class="fas fa-money-bill-wave"></i> إدارة المصروفات</h2>
+            </div>
+            
+            <!-- جدول المصروفات -->
+            <div class="expenses-list">
+                <h3>سجل المصروفات</h3>
+                <table id="expensesTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>النوع</th>
+                            <th>الوصف</th>
+                            <th>المبلغ</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <!-- بيانات المصروفات تُضاف هنا بالجافاسكريبت -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- قسم المخزون -->
+        <section id="inventory" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-warehouse"></i> إدارة المخزون والباركود</h2>
+                <div class="section-actions">
+                    <button class="btn btn-success" id="addInventoryBtn">
+                        <i class="fas fa-plus"></i> إضافة منتج جديد
+                    </button>
+                    <button class="btn btn-primary" onclick="window.barcodeSystem.generateBarcodeReport()">
+                        <i class="fas fa-barcode"></i> تقرير الباركود
+                    </button>
+                    <button class="btn btn-warning" onclick="window.barcodeSystem.showBarcodeHistory()">
+                        <i class="fas fa-history"></i> سجل المسح
+                    </button>
+                    <button class="btn btn-info" onclick="window.barcodeSystem.generateMissingBarcodes()">
+                        <i class="fas fa-magic"></i> توليد باركود للجميع
+                    </button>
+                    <button class="btn btn-primary" onclick="window.productImportExport?.exportProducts()">
+                        <i class="fas fa-download"></i> تصدير المنتجات
+                    </button>
+                </div>
+            </div>
+            
+            <!-- إضافة حقل البحث بالباركود -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="بحث_المخزون" placeholder="بحث في المخزون بالاسم أو الفئة...">
+                </div>
+                <div class="search-box" style="margin-top: 10px;">
+                    <i class="fas fa-barcode"></i>
+                    <input type="text" id="searchBarcode" placeholder="بحث بالباركود..." style="font-family: monospace;">
+                    <button class="btn btn-sm btn-info" onclick="scanBarcodeForSearch()">
+                        <i class="fas fa-camera"></i> مسح
+                    </button>
+                </div>
+            </div>
+            
+            <!-- جدول المخزون -->
+            <div class="inventory-list">
+                <h3>قائمة المنتجات في المخزون</h3>
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>اسم المنتج</th>
+                            <th>الفئة</th>
+                            <th>الكمية</th>
+                            <th>سعر البيع</th>
+                            <th>تكلفة الشراء</th>
+                            <th>القيمة الإجمالية</th>
+                            <th>الباركود</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- بيانات المخزون تُضاف هنا بالجافاسكريبت -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- قسم التقارير -->
+        <section id="reports" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> نظام التقارير الشامل</h2>
+                <button class="btn btn-success" id="generateReport">
+                    <i class="fas fa-file-export"></i>توليد التقرير
+                </button>
+            </div>
+            
+            <!-- تصنيفات التقارير -->
+            <div class="reports-categories">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="sales">
+                        <i class="fas fa-shopping-cart"></i> تقارير المبيعات
+                    </button>
+                    <button class="category-tab" data-category="purchases">
+                        <i class="fas fa-boxes"></i> تقارير المشتريات
+                    </button>
+                    <button class="category-tab" data-category="expenses">
+                        <i class="fas fa-money-bill-wave"></i> تقارير المصروفات
+                    </button>
+                    <button class="category-tab" data-category="profits">
+                        <i class="fas fa-chart-line"></i> تقارير الأرباح
+                    </button>
+                    <button class="category-tab" data-category="inventory">
+                        <i class="fas fa-warehouse"></i> تقارير المخازن
+                    </button>
+                    <button class="category-tab" data-category="summary">
+                        <i class="fas fa-file-alt"></i> تقرير شامل
+                    </button>
+                </div>
+                
+                <!-- محتوى التقارير -->
+                <div class="reports-content">
+                    
+                    <!-- إعدادات التقرير -->
+                    <div class="report-settings">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reportPeriod">الفترة الزمنية</label>
+                                <select id="reportPeriod">
+                                    <option value="daily">يومي</option>
+                                    <option value="weekly">أسبوعي</option>
+                                    <option value="monthly">شهري</option>
+                                    <option value="yearly">سنوي</option>
+                                    <option value="custom">مخصص</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="customDates" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="startDate">من تاريخ</label>
+                                        <input type="date" id="startDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="endDate">إلى تاريخ</label>
+                                        <input type="date" id="endDate">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reportFormat">تنسيق التقرير</label>
+                                <select id="reportFormat">
+                                    <option value="summary">ملخص</option>
+                                    <option value="detailed">مفصل</option>
+                                    <option value="chart">رسم بياني</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- تصفية إضافية حسب النوع -->
+                        <div class="form-row" id="typeFilters">
+                            <div class="form-group" id="productFilter">
+                                <label for="productName">تصفية حسب المنتج</label>
+                                <input type="text" id="productName" placeholder="اسم المنتج">
+                            </div>
+                            <div class="form-group" id="categoryFilter">
+                                <label for="productCategory">تصفية حسب الفئة</label>
+                                <select id="productCategory">
+                                    <option value="">جميع الفئات</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- نتائج التقرير -->
+                    <div class="report-results">
+                        <div class="report-header">
+                            <h3 id="reportTitle">تقرير المبيعات</h3>
+                            <div class="report-period" id="reportPeriodText">الفترة: اليوم</div>
+                        </div>
+                        
+                        <div class="report-body">
+                            <!-- ملخص التقرير -->
+                            <div class="report-summary" id="reportSummary">
+                                <div class="summary-cards">
+                                    <div class="card">
+                                        <h4>إجمالي المبيعات</h4>
+                                        <div class="card-value" id="reportTotalSales">0 ر.س</div>
+                                    </div>
+                                    <div class="card">
+                                        <h4>عدد العمليات</h4>
+                                        <div class="card-value" id="reportTransactionsCount">0</div>
+                                    </div>
+                                    <div class="card">
+                                        <h4>متوسط القيمة</h4>
+                                        <div class="card-value" id="reportAverageValue">0 ر.س</div>
+                                    </div>
+                                    <div class="card">
+                                        <h4>أعلى مبلغ</h4>
+                                        <div class="card-value" id="reportHighestValue">0 ر.س</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- تفاصيل التقرير -->
+                            <div class="report-details">
+                                <div class="report-section" id="reportDetails">
+                                    <h4>تفاصيل التقرير</h4>
+                                    <div id="reportContent">
+                                        <p>اختر نوع التقرير واضغط على "توليد التقرير" لعرض البيانات</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- الرسوم البيانية -->
+                                <div class="report-section" id="reportCharts">
+                                    <h4>الرسوم البيانية</h4>
+                                    <div class="charts-container">
+                                        <div class="chart-box">
+                                            <h5>توزيع المبيعات</h5>
+                                            <div id="salesChart" class="chart-placeholder">
+                                                <p>سيظهر الرسم البياني هنا</p>
+                                            </div>
+                                        </div>
+                                        <div class="chart-box">
+                                            <h5>المقارنة الشهرية</h5>
+                                            <div id="comparisonChart" class="chart-placeholder">
+                                                <p>سيظهر الرسم البياني هنا</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- جدول البيانات -->
+                                <div class="report-section" id="reportTableSection">
+                                    <h4>جدول البيانات</h4>
+                                    <div class="table-container">
+                                        <table id="reportDataTable">
+                                            <thead id="reportTableHeader">
+                                                <tr>
+                                                    <th>التاريخ</th>
+                                                    <th>الوصف</th>
+                                                    <th>المبلغ</th>
+                                                    <th>النوع</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="reportTableBody">
+                                                <tr>
+                                                    <td colspan="4">لا توجد بيانات لعرضها</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- خيارات التصدير -->
+                        <div class="report-actions">
+                            <button class="btn" id="printReport">
+                                <i class="fas fa-print"></i> طباعة التقرير
+                            </button>
+                            <button class="btn btn-success" id="exportPDF">
+                                <i class="fas fa-file-pdf"></i> تصدير PDF
+                            </button>
+                            <button class="btn btn-success" id="exportExcel">
+                                <i class="fas fa-file-excel"></i> تصدير Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم النسخ الاحتياطي -->
+        <section id="backup" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-database"></i> نظام النسخ الاحتياطي</h2>
+                <button class="btn btn-success" onclick="window.localBackupManager.showCreateBackupDialog()">
+                    <i class="fas fa-save"></i> إنشاء نسخة احتياطية
+                </button>
+            </div>
+            
+            <div class="backup-container">
+                <!-- النسخ الاحتياطي المحلي -->
+                <div class="backup-section local-backup">
+                    <h3><i class="fas fa-hdd"></i> النسخ الاحتياطي المحلي</h3>
+                    
+                    <div class="backup-options">
+                        <div class="option-card">
+                            <div class="option-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <h4>تصدير البيانات</h4>
+                            <p>حفظ جميع بيانات النظام في ملف JSON</p>
+                            <div class="option-actions">
+                                <button class="btn btn-primary" onclick="window.localBackupManager.exportData()">
+                                    <i class="fas fa-file-export"></i> تصدير كملف JSON
+                                </button>
+                                <button class="btn btn-success" onclick="window.localBackupManager.copyToClipboard()">
+                                    <i class="fas fa-copy"></i> نسخ للنصوص
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card">
+                            <div class="option-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h4>استيراد البيانات</h4>
+                            <p>استعادة البيانات من ملف النسخ الاحتياطي</p>
+                            <div class="option-actions">
+                                <input type="file" id="backupFile" accept=".json" style="display: none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('backupFile').click()">
+                                    <i class="fas fa-file-import"></i> استيراد من ملف
+                                </button>
+                                <button class="btn btn-success" onclick="window.localBackupManager.importFromText()">
+                                    <i class="fas fa-paste"></i> لصق من النصوص
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="backup-info">
+                        <h4>آخر النسخ الاحتياطية</h4>
+                        <div class="backup-list" id="localBackupList">
+                            <!-- قائمة النسخ الاحتياطية المحلية -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- النسخ الاحتياطي السحابي -->
+                <div class="backup-section cloud-backup">
+                    <h3><i class="fas fa-cloud"></i> النسخ الاحتياطي السحابي</h3>
+                    
+                    <div class="cloud-options">
+                        <div class="option-card">
+                            <div class="option-icon">
+                                <i class="fab fa-google-drive"></i>
+                            </div>
+                            <h4>Google Drive</h4>
+                            <p>حفظ نسخة احتياطية على Google Drive</p>
+                            <div class="option-actions">
+                                <button class="btn btn-primary" id="googleDriveBackup">
+                                    <i class="fas fa-cloud-upload-alt"></i> رفع إلى Google Drive
+                                </button>
+                                <button class="btn btn-success" id="googleDriveRestore">
+                                    <i class="fas fa-cloud-download-alt"></i> استعادة من Google Drive
+                                </button>
+                            </div>
+                            <div class="auth-status" id="googleAuthStatus">
+                                <span class="status-dot"></span>
+                                <span>غير متصل</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card">
+                            <div class="option-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h4>نسخ تلقائي</h4>
+                            <p>ضبط النسخ التلقائي على فترات محددة</p>
+                            <div class="auto-backup-settings">
+                                <div class="form-group">
+                                    <label for="autoBackupInterval">فترة النسخ التلقائي:</label>
+                                    <select id="autoBackupInterval">
+                                        <option value="daily">يومياً</option>
+                                        <option value="weekly">أسبوعياً</option>
+                                        <option value="monthly">شهرياً</option>
+                                        <option value="disabled" selected>معطل</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="تفعيل_النسخ_التلقائي()">
+                                    <i class="fas fa-cog"></i> حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cloud-info">
+                        <h4>حالة النسخ السحابي</h4>
+                        <div class="status-cards">
+                            <div class="status-card">
+                                <div class="status-icon success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="status-info">
+                                    <h5>آخر نسخة ناجحة</h5>
+                                    <p id="lastSuccessfulBackup">لا توجد</p>
+                                </div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-icon warning">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="status-info">
+                                    <h5>حجم البيانات</h5>
+                                    <p id="dataSize">0 KB</p>
+                                </div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-icon info">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="status-info">
+                                    <h5>مساحة التخزين</h5>
+                                    <div class="storage-bar">
+                                        <div class="storage-fill" id="storageFill" style="width: 0%"></div>
+                                    </div>
+                                    <p><span id="usedStorage">0 KB</span> / <span id="totalStorage">15 GB</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إدارة النسخ الاحتياطي -->
+                <div class="backup-management">
+                    <h3><i class="fas fa-tasks"></i> إدارة النسخ الاحتياطي</h3>
+                    
+                    <div class="management-actions">
+                        <button class="btn btn-primary" onclick="EventHandlers.showAllBackups()">
+                            <i class="fas fa-list"></i> عرض جميع النسخ
+                        </button>
+                        <button class="btn btn-warning" onclick="EventHandlers.cleanOldBackups()">
+                            <i class="fas fa-trash-alt"></i> تنظيف النسخ القديمة
+                        </button>
+                        <button class="btn btn-danger" onclick="EventHandlers.deleteAllBackups()">
+                            <i class="fas fa-broom"></i> حذف جميع النسخ
+                        </button>
+                    </div>
+                    
+                    <div class="management-info">
+                        <div class="info-box">
+                            <h5>إحصائيات النسخ الاحتياطي</h5>
+                            <table class="stats-table">
+                                <tr>
+                                    <td>عدد النسخ المحلية:</td>
+                                    <td id="localBackupCount">0</td>
+                                </tr>
+                                <tr>
+                                    <td>عدد النسخ السحابية:</td>
+                                    <td id="cloudBackupCount">0</td>
+                                </tr>
+                                <tr>
+                                    <td>أول نسخة احتياطية:</td>
+                                    <td id="firstBackupDate">لا توجد</td>
+                                </tr>
+                                <tr>
+                                    <td>آخر نسخة احتياطية:</td>
+                                    <td id="lastBackupDate">لا توجد</td>
+                                </tr>
+                                <tr>
+                                    <td>إجمالي حجم النسخ:</td>
+                                    <td id="totalBackupSize">0 KB</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="info-box">
+                            <h5>نصائح النسخ الاحتياطي</h5>
+                            <ul class="tips-list">
+                                <li><i class="fas fa-lightbulb"></i> أنشئ نسخة احتياطية أسبوعياً على الأقل</li>
+                                <li><i class="fas fa-lightbulb"></i> احفظ نسخة محلية ونسخة سحابية</li>
+                                <li><i class="fas fa-lightbulb"></i> اختبر استعادة البيانات بشكل دوري</li>
+                                <li><i class="fas fa-lightbulb"></i> احتفظ بثلاث نسخ على الأقل في أوقات مختلفة</li>
+                                <li><i class="fas fa-lightbulb"></i> تأكد من تشفير النسخ المحتوية على بيانات حساسة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- تذييل الصفحة -->
+        <footer>
+            <p>نظام محاسبة المتاجر الصغيرة &copy; <span id="currentYear"></span> | تم التطوير بلغات الويب HTML, CSS, JavaScript</p>
+        </footer>
+    </div>
+    
+    <!-- ===================================================================== -->
+    <!-- النوافذ المنبثقة للنماذج -->
+    <!-- ===================================================================== -->
+    
+    <!-- نافذة منبثقة لإضافة المبيعات -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-cart"></i> تسجيل عملية بيع جديدة</h2>
+                <button class="close-modal" id="closeSaleModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="saleDate">التاريخ</label>
+                        <input type="date" id="saleDate" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="saleProduct">المنتج</label>
+                        <select id="saleProduct">
+                            <option value="">اختر منتج</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="saleQuantity">الكمية</label>
+                        <input type="number" id="saleQuantity" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="salePrice">سعر الوحدة</label>
+                        <input type="number" id="salePrice" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="saleCustomer">اسم العميل (اختياري)</label>
+                    <input type="text" id="saleCustomer" placeholder="اسم العميل">
+                </div>
+                <div class="form-group">
+                    <label for="saleNotes">ملاحظات</label>
+                    <textarea id="saleNotes" rows="3" placeholder="ملاحظات إضافية"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="saveSale">حفظ البيع</button>
+                <button class="btn btn-danger" id="cancelSale">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة منبثقة لإضافة المشتريات -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-boxes"></i> تسجيل عملية شراء جديدة</h2>
+                <button class="close-modal" id="closePurchaseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchaseDate">التاريخ</label>
+                        <input type="date" id="purchaseDate" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseProduct">اسم المنتج</label>
+                        <input type="text" id="purchaseProduct" placeholder="اسم المنتج">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseQuantity">الكمية</label>
+                        <input type="number" id="purchaseQuantity" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchasePrice">سعر الوحدة</label>
+                        <input type="number" id="purchasePrice" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="purchaseSupplier">المورد</label>
+                    <input type="text" id="purchaseSupplier" placeholder="اسم المورد">
+                </div>
+                <div class="form-group">
+                    <label for="purchaseNotes">ملاحظات</label>
+                    <textarea id="purchaseNotes" rows="3" placeholder="ملاحظات إضافية"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="savePurchase">حفظ الشراء</button>
+                <button class="btn btn-danger" id="cancelPurchase">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة منبثقة لإضافة المصروفات -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-money-bill-wave"></i> تسجيل مصروف جديد</h2>
+                <button class="close-modal" id="closeExpenseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expenseDate">التاريخ</label>
+                        <input type="date" id="expenseDate" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseType">نوع المصروف</label>
+                        <select id="expenseType">
+                            <option value="إيجار">إيجار</option>
+                            <option value="رواتب">رواتب</option>
+                            <option value="كهرباء">كهرباء</option>
+                            <option value="مياه">مياه</option>
+                            <option value="إنترنت">إنترنت</option>
+                            <option value="نقل">نقل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseAmount">المبلغ</label>
+                        <input type="number" id="expenseAmount" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="expenseDescription">الوصف</label>
+                    <textarea id="expenseDescription" rows="3" placeholder="وصف المصروف"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="saveExpense">حفظ المصروف</button>
+                <button class="btn btn-danger" id="cancelExpense">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة منبثقة لإضافة المخزون -->
+<!-- نافذة منبثقة لإضافة المخزون -->
+<div id="inventoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-warehouse"></i> إضافة منتج جديد للمخزون</h2>
+            <button class="close-modal" id="closeInventoryModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inventoryName">اسم المنتج *</label>
+                    <input type="text" id="inventoryName" placeholder="اسم المنتج" required>
+                </div>
+                <div class="form-group">
+                    <label for="inventoryCategory">الفئة *</label>
+                    <input type="text" id="inventoryCategory" placeholder="فئة المنتج" list="categories" required>
+                    <datalist id="categories">
+                        <option value="فئة 1">
+                        <option value="فئة 2">
+                        <option value="مشتريات جديدة">
+                        <option value="الكترونيات">
+                        <option value="ملابس">
+                        <option value="أغذية">
+                        <option value="أدوات">
+                        <option value="مكتبية">
+                        <option value="أخرى">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label for="inventoryQuantity">الكمية المتاحة *</label>
+                    <input type="number" id="inventoryQuantity" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="inventoryPrice">سعر البيع *</label>
+                    <input type="number" id="inventoryPrice" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inventoryCost">تكلفة الشراء</label>
+                <input type="number" id="inventoryCost" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <!-- حقل الباركود -->
+            <div class="form-group">
+                <label for="inventoryBarcode">باركود المنتج</label>
+                <div class="barcode-input-group">
+                    <input type="text" id="inventoryBarcode" placeholder="باركود المنتج (12 رقم)" maxlength="12">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="generateBarcodeForCurrentProduct()">
+                        <i class="fas fa-barcode"></i> توليد
+                    </button>
+                </div>
+                <small class="text-muted">اتركه فارغاً لتوليد باركود تلقائياً</small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" id="saveInventory">حفظ المنتج</button>
+            <button class="btn btn-danger" id="cancelInventory">إلغاء</button>
+        </div>
+    </div>
+</div>
+    
+    <!-- ملفات JavaScript -->
+<script src="js/00_config.js"></script>
+<script src="js/01_utils.js"></script>
+<script src="js/02_core.js"></script>
+<script src="js/03_modals.js"></script>
+<script src="js/08_search.js"></script>
+<script src="js/04_sales.js"></script>
+<script src="js/05_purchases.js"></script>
+<script src="js/06_expenses.js"></script>
+<script src="js/07_inventory.js"></script>
+<script src="js/09_dashboard.js"></script>
+<script src="js/10_reports.js"></script>
+<script src="js/11_advanced_reports.js"></script>
+<script src="js/12_pdf_system.js"></script>
+<script src="js/13_backup_local.js"></script>
+<script src="js/14_backup_cloud.js"></script>
+<script src="js/15_ui_components.js"></script>
+<script src="js/16_event_handlers.js"></script>
+<script src="js/17_edit_delete.js"></script>
+<!-- أضف هذا السطر -->
+<script src="js/20_barcode_system.js"></script>
+<!-- أضف هذا السطر بعد ملف barcode_system.js -->
+<script src="js/21_quick_sale.js"></script>
+<script src="js/18_main.js"></script>
+</body>
+</html>
