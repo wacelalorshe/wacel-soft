@@ -134,6 +134,9 @@ window.printBarcodeLabel = printBarcodeLabel;
     // 1. تهيئة النظام الأساسي
     System.init();
     
+    
+    
+    
     // 2. تهيئة إدارة النوافذ المنبثقة
     ModalManager.initGlobalCloseListeners();
     ModalManager.initModalCloseButtons();
@@ -251,6 +254,9 @@ bindBarcodeEvents();
 console.log('تم تهيئة النظام بنجاح!');
 
 
-
+// 2. تهيئة نظام استيراد وتصدير Excel
+console.log('تهيئة نظام استيراد وتصدير Excel...');
+window.excelImportExport = new ExcelImportExport();
+window.excelImportExport.init(); 
 
 
