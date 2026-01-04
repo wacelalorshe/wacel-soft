@@ -40,6 +40,9 @@ body {
     line-height: 1.6;            /* ارتفاع السطر */
     min-height: 100vh;
     overflow-x: hidden;
+    margin-top: 110px; /* اضبط هذه القيمة بناءً على ارتفاع الهيدر الخاص بك */
+    
+    
 }
 
 .container {
@@ -53,17 +56,54 @@ body {
    تنسيقات رأس الصفحة
 --------------------------------------------------------------------------- */
 header {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
+    position: -webkit-sticky; /* لدعم متصفحات Safari */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    
+    /* بقية خصائص الكود الخاص بك كما هي */
+    
+    
+   
+   
+    background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
+    /* تأثير الزجاج الضبابي */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(80px);
+
+
+
+
+    
+    
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+
+
+
+    color: #000;
+    /* ... الخ */
+
+height: 12%;
+    
+    width: 100%;
     padding: var(--header-padding);
     text-align: center;
-    border-radius: 0 0 15px 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: var(--section-gap);
-    position: relative;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 10px 32px #000;
+    border-bottom: 4px ridge #CCCCCC;
+    /* التعديلات الأساسية للتثبيت */
+    position: fixed; 
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* لضمان بقائه فوق العناصر الأخرى */
+    
     overflow: hidden;
 }
 
+
+ 
 header::before {
     content: '';
     position: absolute;
@@ -71,21 +111,92 @@ header::before {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--danger-color));
+    
 }
 
 header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 3rem; /* تكبير الحجم قليلاً للمظهر العصري */
+    font-weight: 900; /* جعل الخط عريضاً وقوياً */
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    /* تأثير التدرج اللوني على النص */
+    background: linear-gradient(135deg, #0400FF, #00D4FF);
+    -webkit-background-clip: text; /* قص الخلفية لتظهر داخل النص فقط */
+    -webkit-text-fill-color: transparent; /* جعل لون الخط شفافاً ليظهر التدرج */
+    
+    /* إضافة لمسة من الظل الناعم ليعطي عمقاً */
+    text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+    
+    /* تحسين المسافات بين الحروف */
+    letter-spacing: -1px;
+    
+    /* المحاذاة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     position: relative;
     z-index: 1;
+    
+    /* إضافة حركة خفيفة عند التحميل (اختياري) */
+    transition: transform 0.3s ease;
+    
+    display: block;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+
+    /* التحكم في الموقع من هنا: */
+    /* القيمة الأولى لليمين واليسار (X) | القيمة الثانية للأعلى والأسفل (Y) */
+    transform: translate(-20px, -60px); 
+    
+    transition: all 0.3s ease; /* تجعل الانتقال ناعماً عند التغيير */
+    
+    
 }
+
+/* تأثير عند تمرير الماوس */
+header h1:hover {
+    transform: scale(1.05); /* تكبير بسيط عند المرور بالماوس */
+    filter: brightness(1.2);
+}
+
 
 header p {
     font-size: 1.1rem;
     opacity: 0.9;
     position: relative;
     z-index: 1;
+    
+    display: block;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+ext-shadow: 0 2px 40px rgba(0,0,0,0.45);
+    /* تأثير التدرج اللوني على النص */
+    background: linear-gradient(135deg, #0400FF, #00D4FF);
+    -webkit-background-clip: text; /* قص الخلفية لتظهر داخل النص فقط */
+    -webkit-text-fill-color: transparent; /* جعل لون الخط شفافاً ليظهر التدرج */
+    
+    /* إضافة لمسة من الظل الناعم ليعطي عمقاً */
+    text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.7);
+    
+    /* تحسين المسافات بين الحروف */
+    letter-spacing: -1px;
+    
+    /* المحاذاة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    position: relative;
+    z-index: 1;
+    /* التحكم في الموقع من هنا: */
+    /* القيمة الأولى لليمين واليسار (X) | القيمة الثانية للأعلى والأسفل (Y) */
+    transform: translate(-20px, -70px); 
+    
+    transition: all 0.3s ease; /* تجعل الانتقال ناعماً عند التغيير */
+    
 }
 
 /* ---------------------------------------------------------------------------
@@ -2785,4 +2896,194 @@ footer {
 .no-barcode {
     color: #6c757d;
     font-style: italic;
+}
+
+
+/* ============================================================================
+   تنسيقات استيراد وتصدير Excel
+   ============================================================================ */
+
+.excel-dialog {
+    max-width: 900px !important;
+}
+
+.excel-dialog .file-upload-area {
+    border: 2px dashed #28a745;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    background: #f8fff8;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.excel-dialog .file-upload-area:hover {
+    background: #f0fff0;
+    border-color: #218838;
+}
+
+.excel-dialog .file-upload-area i {
+    font-size: 48px;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.excel-dialog .preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.excel-dialog .preview-table th {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.excel-dialog .preview-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-align: right;
+}
+
+.excel-dialog .preview-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.excel-dialog .columns-checkbox {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.excel-dialog .columns-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.excel-dialog .columns-checkbox label:hover {
+    background: #e9ecef;
+    border-radius: 3px;
+}
+
+.excel-dialog .report-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #dee2e6;
+    margin: 10px 0;
+}
+
+.excel-dialog .report-card.success {
+    border-color: #28a745;
+    background: #f0fff4;
+}
+
+.excel-dialog .report-card.info {
+    border-color: #17a2b8;
+    background: #f0f9ff;
+}
+
+.excel-dialog .report-card i {
+    color: #28a745;
+}
+
+.excel-dialog .report-card.info i {
+    color: #17a2b8;
+}
+
+.excel-dialog .report-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.excel-dialog .next-steps ul {
+    list-style: none;
+    padding: 0;
+}
+
+.excel-dialog .next-steps li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.excel-dialog .next-steps li i {
+    color: #28a745;
+}
+
+/* تنسيقات السحب والإفلات */
+.drag-over {
+    border-color: #218838 !important;
+    background: #f0fff4 !important;
+    transform: scale(1.01);
+}
+
+/* تنسيقات المعاينة */
+.preview-box {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+/* تنسيقات الخطوات */
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.step {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.step-number {
+    background: #28a745;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h5 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.step-content p {
+    color: #666;
+    margin-bottom: 5px;
 }
